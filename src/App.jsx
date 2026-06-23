@@ -394,7 +394,7 @@ export default function App() {
                   <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'3px',color:'#e9c31f',marginBottom:'12px'}}>FROM YOUR COACH, DOLL AVANT</div>
                   <p style={{...body,margin:0,fontStyle:'italic'}}>{priorityResponse}</p>
                 </div>
-                <button style={btn} onClick={()=>setStep(5)}>CONTINUE → SCHEDULE IT</button>
+                <button style={btn} onClick={()=>setStep(5)}>SCHEDULE YOUR PRIORITIES →</button>
               </>
             )}
           </div>
@@ -431,7 +431,7 @@ export default function App() {
               <p style={{...body,margin:0,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>WHAT HAPPENS IN YOUR BRAIN WHEN YOU COMMIT TO A TIME:</p>
               <p style={{...body,margin:'8px 0 0'}}>The prefrontal cortex creates an implementation intention — a neural pre-commitment that fires automatically when the scheduled time arrives. The commitment is already in the architecture.</p>
             </div>
-            <button style={btn} onClick={()=>setStep(6)}>CONTINUE → JOIN THE #NOFEARARMY</button>
+            <button style={btn} onClick={()=>setStep(6)}>AUTOMATE YOUR COMMITMENT →</button>
           </div>
         )}
 
