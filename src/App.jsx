@@ -386,7 +386,7 @@ export default function App() {
               <button style={{...ghost,marginBottom:'24px'}} onClick={()=>{const a=[...priorities,{what:'',success:'',onlyWay:'',steps:['','','']}];setPriorities(a);syncSch(a)}}>+ ADD PRIORITY {priorities.length+1}</button>
             )}
             {!priorityResponse&&(
-              <button style={{...btn,opacity:priorities.some(p=>p.what.trim())?1:.5,marginBottom:'16px'}} onClick={handlePrioSubmit} disabled={!priorities.some(p=>p.what.trim())||prioLoading}>{prioLoading?'READING YOUR PRIORITIES...':'SEE YOUR FEAR DETOX SUMMARY →'}</button>
+              <button style={{...btn,opacity:priorities.some(p=>p.what.trim())?1:.5,marginBottom:'16px'}} onClick={handlePrioSubmit} disabled={!priorities.some(p=>p.what.trim())||prioLoading}>{prioLoading?'READING YOUR PRIORITIES...':'LOCK IN PRIORITIES →'}</button>
             )}
             {priorityResponse&&(
               <>
