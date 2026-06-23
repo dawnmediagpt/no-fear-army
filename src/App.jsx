@@ -84,7 +84,7 @@ export default function App() {
   const [expandedFearType, setExpandedFearType] = useState(null)
   const [oldStory, setOldStory] = useState('')
   const [newChoice, setNewChoice] = useState('')
-  const [priorities, setPriorities] = useState([{what:'',success:'',onlyWay:''}])
+  const [priorities, setPriorities] = useState([{what:'',success:'',onlyWay:'',steps:''}])
   const [schedule, setSchedule] = useState([{day:'Monday',time:'8:00 AM'}])
   const [movieLoading, setMovieLoading] = useState(false)
   const [prioLoading, setPrioLoading] = useState(false)
@@ -350,6 +350,7 @@ export default function App() {
               <div style={lbl}>QUESTION 4 OF 6 · THE BIG SWING</div>
               <h2 style={h2s}>Your intuition already knows. It's been telling you the same thing. Now we're going to make a plan.</h2>
               <p style={body}>There's something your gut won't stop pointing at — the project, the move, the conversation, the launch. This is where you stop talking about it and start anchoring it.</p>
+              <p style={{...body,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Your intuition isn't a guess. It's your built-in GPS — and it keeps recalculating until you turn toward the destination. The thing it keeps pointing at? That's the route.</p>
             </div>
             {priorities.map((pri,i)=>(
               <div key={i} style={{...card,borderColor:i===0?'rgba(233,195,31,0.3)':'#2a2a2a',marginBottom:'16px'}}>
@@ -358,22 +359,25 @@ export default function App() {
                   {i>0&&<button onClick={()=>{const a=priorities.filter((_,j)=>j!==i);setPriorities(a);syncSch(a)}} style={{background:'none',border:'none',color:'#999',cursor:'pointer',fontSize:'18px'}}>×</button>}
                 </div>
                 <span style={lbl}>THE NUDGE — WHAT IS IT?</span>
-                <p style={{...small,marginBottom:'8px'}}>Name the big, lofty thing you'd be building or doing right now if fear wasn't in the room. Don't shrink it. Write the real one — something uncomfortable, something you'd never normally say out loud you'd do.</p>
+                <p style={{...small,marginBottom:'8px'}}>Your gut has been pointing at this for a while. Don't shrink it. Write the real one — the project, move, or launch you'd build if fear wasn't in the room.</p>
                 <textarea style={{...ta,minHeight:'70px',marginBottom:'16px'}} placeholder="Name the specific thing you're building, launching, doing or finishing this week that leads towards your North Star." value={pri.what} onChange={e=>updatePri(i,'what',e.target.value)}/>
-                <span style={lbl}>THE WAY I'LL KNOW I SUCCEEDED IS...</span>
-                <p style={{...small,marginBottom:'8px'}}>A win needs a finish line or you'll never cross it. Name the specific, observable thing that will tell you — not feel like, tell you — that you did it. A number. A date. A thing that exists or doesn't.</p>
-                <textarea style={{...ta,minHeight:'70px',marginBottom:'16px'}} placeholder="Be exact. Not 'I'll feel more confident' — name a deliverable." value={pri.success} onChange={e=>updatePri(i,'success',e.target.value)}/>
                 <span style={lbl}>THE ONLY WAY — by Doll Avant</span>
                 <p style={{...small,marginBottom:'8px'}}>This is the move most people skip. And it's the one that separates a wish from a plan.</p>
-                <p style={{...small,marginBottom:'8px'}}>Constraint-based cognition: when you force your brain to operate as if failure isn't an option, it stops generating reasons you can't and starts generating the way you can. The prefrontal cortex doesn't problem-solve while it's scanning for escape routes. Close the escape routes. Watch what your mind does next.</p>
-                <p style={{...small,marginBottom:'12px'}}>You're not asking "can I?" — you've already decided you will. The only question left is <em style={{color:'#fff'}}>how</em>. That single shift unlocks options your fear was hiding.</p>
-                <p style={{...small,marginBottom:'12px',color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Ask yourself: "If my life depended on it — the only way I could make real, undeniable progress on this in the next 7 days would be…"</p>
-                <p style={{...small,marginBottom:'12px'}}>Now answer it. Name the specific people you'd have to call. The rooms you'd have to walk into. The things you'd have to say yes to that you've been saying maybe to. The version of you that would have to show up. No softening. No "maybe." Only the way.</p>
-                <textarea style={{...ta,minHeight:'70px'}} placeholder="The only way I could do this in the next 7 days would be…" value={pri.onlyWay} onChange={e=>updatePri(i,'onlyWay',e.target.value)}/>
+                <p style={{...small,marginBottom:'8px'}}>Constraint-based cognition: when you force your brain to operate as if failure isn't an option, it stops generating reasons you can't and starts generating the way you can. The prefrontal cortex stops deferring to the threat-detection system the moment you close the escape routes. That's when the real solutions show up.</p>
+                <p style={{...small,marginBottom:'12px',color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Ask yourself: "If I had to make real progress on this in 7 days — the only way I could do that would be…"</p>
+                <p style={{...small,marginBottom:'12px'}}>Name the people you'd call. The rooms you'd walk into. The things you'd say yes to. The version of you that would have to show up. No softening. No "maybe." Only the way.</p>
+                <textarea style={{...ta,minHeight:'70px',marginBottom:'16px'}} placeholder="The only way I could do this in the next 7 days would be…" value={pri.onlyWay} onChange={e=>updatePri(i,'onlyWay',e.target.value)}/>
+                <span style={lbl}>THE RECIPE CARD — STEPS</span>
+                <p style={{...small,marginBottom:'8px'}}>Now break it down. List as many steps as you can off the top of your head — the ingredients, the order, the moves. Don't optimize. Just dump.</p>
+                <textarea style={{...ta,minHeight:'100px',marginBottom:'16px'}} placeholder={'1.\n2.\n3.\n4.\n5.'} value={pri.steps||''} onChange={e=>updatePri(i,'steps',e.target.value)}/>
+                <span style={lbl}>THE WAY I'LL KNOW I SUCCEEDED IS...</span>
+                <p style={{...small,marginBottom:'8px'}}>A win needs a finish line or you'll never cross it. Name the specific, observable thing that will tell you — not feel like, tell you — that you did it. A number. A date. A thing that exists or doesn't.</p>
+                <textarea style={{...ta,minHeight:'70px'}} placeholder="Be exact. Not 'I'll feel more confident' — name a deliverable." value={pri.success} onChange={e=>updatePri(i,'success',e.target.value)}/>
+                <p style={{...small,marginTop:'12px',fontSize:'12px',color:'#999',fontStyle:'italic'}}>Next step: lock the day and time you'll start. Not finish — start.</p>
               </div>
             ))}
             {priorities.length<3&&(
-              <button style={{...ghost,marginBottom:'24px'}} onClick={()=>{const a=[...priorities,{what:'',success:'',onlyWay:''}];setPriorities(a);syncSch(a)}}>+ ADD PRIORITY {priorities.length+1}</button>
+              <button style={{...ghost,marginBottom:'24px'}} onClick={()=>{const a=[...priorities,{what:'',success:'',onlyWay:'',steps:''}];setPriorities(a);syncSch(a)}}>+ ADD PRIORITY {priorities.length+1}</button>
             )}
             {!priorityResponse&&(
               <button style={{...btn,opacity:priorities.some(p=>p.what.trim())?1:.5,marginBottom:'16px'}} onClick={handlePrioSubmit} disabled={!priorities.some(p=>p.what.trim())||prioLoading}>{prioLoading?'READING YOUR PRIORITIES...':'SEE YOUR FEAR DETOX SUMMARY →'}</button>
@@ -477,8 +481,7 @@ export default function App() {
             <div style={{textAlign:'center',marginBottom:'28px'}}>
               <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'4px',color:'#e9c31f',marginBottom:'12px'}}>WELCOME TO THE MOVEMENT</div>
               <h2 style={{...h2s,fontSize:'28px',marginBottom:'16px'}}>You're joining the #NoFearArmy.</h2>
-              <p style={{...body,margin:'0 0 12px',color:'#999'}}>A community of visionaries, creatives, and entrepreneurs who are done with letting fear stop you from taking BOLD ACTION. Enter your email for a free report that will immediately help you name a big fear, choose a path to conquer it, and schedule BIG BOLD action on your calendar immediately. No more hesitation. No more fear. Join the movement.</p>
-              <p style={{...body,margin:0,color:'#999'}}>You'll also get a daily fear detox prompt — one question every morning to rewire your brain and bypass your biggest fears. 365 days. Together.</p>
+              <p style={{...body,margin:0,color:'#999'}}>A community of visionaries, creatives, and entrepreneurs who are done with letting fear stop you from taking BOLD ACTION. Enter your email for a free report that will immediately help you name a big fear, choose a path to conquer it, and schedule BIG BOLD action on your calendar immediately. No more hesitation. No more fear. Join the movement. You'll also get a daily fear detox prompt — one question every morning to rewire your brain and bypass your biggest fears. 365 days. Together.</p>
             </div>
             <div style={{marginBottom:'14px'}}>
               <span style={lbl}>YOUR FIRST NAME</span>
