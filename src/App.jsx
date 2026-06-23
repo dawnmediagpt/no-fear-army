@@ -81,6 +81,7 @@ export default function App() {
   const [selectedWhispers, setSelectedWhispers] = useState([])
   const [otherFear, setOtherFear] = useState('')
   const [selectedFearType, setSelectedFearType] = useState(null)
+  const [expandedFearType, setExpandedFearType] = useState(null)
   const [oldStory, setOldStory] = useState('')
   const [newChoice, setNewChoice] = useState('')
   const [priorities, setPriorities] = useState([{what:'',success:'',onlyWay:''}])
@@ -270,19 +271,22 @@ export default function App() {
                 <div style={{...card,marginBottom:'16px'}}>
                   <span style={lbl}>WHAT TYPE OF FEAR SHOWED UP?</span>
                   <p style={{...small,marginBottom:'14px'}}>Select the one that feels most like what you just wrote. Tap to expand, then confirm.</p>
-                  {FEAR_TYPES.map(ft=>(
-                    <div key={ft.id} style={{...card,borderColor:selectedFearType===ft.id?'#e9c31f':'#2a2a2a',marginBottom:'10px',cursor:'pointer'}} onClick={()=>setSelectedFearType(selectedFearType===ft.id?null:ft.id)}>
-                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  {FEAR_TYPES.map(ft=>{
+                    const isExpanded = expandedFearType===ft.id
+                    const isSelected = selectedFearType===ft.id
+                    return (
+                    <div key={ft.id} style={{...card,borderColor:isSelected?'#e9c31f':'#2a2a2a',marginBottom:'10px'}}>
+                      <div onClick={()=>setExpandedFearType(isExpanded?null:ft.id)} style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer'}}>
                         <div style={{display:'flex',gap:'10px',alignItems:'center'}}>
                           <span style={{fontSize:'18px'}}>{ft.emoji}</span>
                           <div>
-                            <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'13px',letterSpacing:'1.5px',color:selectedFearType===ft.id?'#e9c31f':'#ffffff'}}>{ft.label}</div>
+                            <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'13px',letterSpacing:'1.5px',color:isSelected?'#e9c31f':'#ffffff'}}>{ft.label}{isSelected?' ✓':''}</div>
                             <div style={{fontSize:'13px',color:'#999'}}>{ft.desc}</div>
                           </div>
                         </div>
-                        <span style={{color:'#999',fontSize:'16px'}}>{selectedFearType===ft.id?'▲':'▼'}</span>
+                        <span style={{color:'#999',fontSize:'16px'}}>{isExpanded?'▲':'▼'}</span>
                       </div>
-                      {selectedFearType===ft.id&&(
+                      {isExpanded&&(
                         <div style={{marginTop:'16px',borderTop:'1px solid #2a2a2a',paddingTop:'16px'}}>
                           <div style={{...lbl,color:'#aaa'}}>WHERE IT COMES FROM</div>
                           <p style={{...small,marginBottom:'12px'}}>{ft.origin}</p>
@@ -290,11 +294,11 @@ export default function App() {
                           <p style={{...small,marginBottom:'12px'}}>{ft.looks}</p>
                           <div style={{...lbl,color:'#e9c31f'}}>HOW TO REGULATE IT</div>
                           <div style={{...goldCard,marginTop:'4px'}}><p style={{...small,margin:0}}>{ft.regulate}</p></div>
-                          <button style={{...btn,marginTop:'14px'}} onClick={e=>{e.stopPropagation();setStep(3)}}>NOW MEET YOUR FUTURE SELF →</button>
+                          <button style={{...btn,marginTop:'14px'}} onClick={()=>{setSelectedFearType(ft.id);setStep(3)}}>THIS IS MY FEAR TYPE ✓</button>
                         </div>
                       )}
                     </div>
-                  ))}
+                  )})}
                 </div>
                 <div style={{...card,marginBottom:'24px'}}>
                   <span style={lbl}>ADD ANYTHING ELSE</span>
@@ -359,11 +363,13 @@ export default function App() {
                 <span style={lbl}>THE WAY I'LL KNOW I SUCCEEDED IS...</span>
                 <p style={{...small,marginBottom:'8px'}}>A win needs a finish line or you'll never cross it. Name the specific, observable thing that will tell you — not feel like, tell you — that you did it. A number. A date. A thing that exists or doesn't.</p>
                 <textarea style={{...ta,minHeight:'70px',marginBottom:'16px'}} placeholder="Be exact. Not 'I'll feel more confident' — name a deliverable." value={pri.success} onChange={e=>updatePri(i,'success',e.target.value)}/>
-                <span style={lbl}>THE ONLY WAY — The Only Way by Doll Avant</span>
-                <p style={{...small,marginBottom:'8px'}}>Now here's the shift. Eliminate every reason you can't. Pretend the doubts don't exist. When you remove the escape routes, your prefrontal cortex stops deferring to the threat-detection system and starts actually solving. This is constraint-based cognition. It's how breakthrough thinking works.</p>
-                <p style={{...small,marginBottom:'12px',color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Ask yourself: "If I had to make real progress on this in the next 7 days — the only way I could do that would be…"</p>
-                <p style={{...small,marginBottom:'12px'}}>Name the people you'd have to call. The rooms you'd have to walk into. The things you'd have to say yes to. The version of you that would have to show up.</p>
-                <textarea style={{...ta,minHeight:'70px'}} placeholder="Write what comes up. Name the people, the places, the actions. The version of you that would have to show up." value={pri.onlyWay} onChange={e=>updatePri(i,'onlyWay',e.target.value)}/>
+                <span style={lbl}>THE ONLY WAY — by Doll Avant</span>
+                <p style={{...small,marginBottom:'8px'}}>This is the move most people skip. And it's the one that separates a wish from a plan.</p>
+                <p style={{...small,marginBottom:'8px'}}>Constraint-based cognition: when you force your brain to operate as if failure isn't an option, it stops generating reasons you can't and starts generating the way you can. The prefrontal cortex doesn't problem-solve while it's scanning for escape routes. Close the escape routes. Watch what your mind does next.</p>
+                <p style={{...small,marginBottom:'12px'}}>You're not asking "can I?" — you've already decided you will. The only question left is <em style={{color:'#fff'}}>how</em>. That single shift unlocks options your fear was hiding.</p>
+                <p style={{...small,marginBottom:'12px',color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Ask yourself: "If my life depended on it — the only way I could make real, undeniable progress on this in the next 7 days would be…"</p>
+                <p style={{...small,marginBottom:'12px'}}>Now answer it. Name the specific people you'd have to call. The rooms you'd have to walk into. The things you'd have to say yes to that you've been saying maybe to. The version of you that would have to show up. No softening. No "maybe." Only the way.</p>
+                <textarea style={{...ta,minHeight:'70px'}} placeholder="The only way I could do this in the next 7 days would be…" value={pri.onlyWay} onChange={e=>updatePri(i,'onlyWay',e.target.value)}/>
               </div>
             ))}
             {priorities.length<3&&(
