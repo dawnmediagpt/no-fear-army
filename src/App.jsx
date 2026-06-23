@@ -95,6 +95,7 @@ export default function App() {
   const [fgTrigger, setFgTrigger] = useState('')
   const [fearLog, setFearLog] = useState([])
   const [copied, setCopied] = useState(false)
+  const [joinLoading, setJoinLoading] = useState(false)
 
   useEffect(() => { window.scrollTo({top:0,behavior:'instant'}) }, [step])
 
@@ -499,7 +500,7 @@ export default function App() {
               <span style={lbl}>YOUR EMAIL</span>
               <input style={inp} placeholder="Where should we send your daily prompts?" type="email" value={email} onChange={e=>setEmail(e.target.value)}/>
             </div>
-            <button style={{...btn,opacity:firstName.trim()&&email.includes('@')?1:.5}} disabled={!firstName.trim()||!email.includes('@')} onClick={async()=>{await captureEmail(firstName,email);setShowModal(false);setStep(1)}}>I'M IN — LET'S GO →</button>
+            <button style={{...btn,opacity:firstName.trim()&&email.includes('@')&&!joinLoading?1:.5}} disabled={!firstName.trim()||!email.includes('@')||joinLoading} onClick={async()=>{setJoinLoading(true);await captureEmail(firstName,email);setShowModal(false);setStep(1);setJoinLoading(false)}}>{joinLoading?'JOINING THE MOVEMENT...':"I'M IN — LET'S GO →"}</button>
             <p style={{...small,textAlign:'center',marginTop:'14px',fontSize:'12px'}}>No spam. One daily prompt. Unsubscribe anytime.</p>
             <p style={{textAlign:'center',marginTop:'6px'}}><span style={{fontFamily:"'Oswald',sans-serif",fontSize:'13px',letterSpacing:'3px',color:'#e9c31f'}}>F IMPOSSIBLE.</span></p>
           </div>
