@@ -80,7 +80,7 @@ export default function App() {
   const [fearButs, setFearButs] = useState(['','',''])
   const [selectedWhispers, setSelectedWhispers] = useState([])
   const [otherFear, setOtherFear] = useState('')
-  const [selectedFearType, setSelectedFearType] = useState(null)
+  const [selectedFearType, setSelectedFearType] = useState([])
   const [expandedFearType, setExpandedFearType] = useState(null)
   const [oldStory, setOldStory] = useState('')
   const [newChoice, setNewChoice] = useState('')
@@ -144,7 +144,7 @@ export default function App() {
     setFgThought(''); setFgTrigger('')
   }
 
-  const canStep2 = fearItems.filter(f=>f.trim()).length>0 && (selectedWhispers.length>0||otherFear.trim()||selectedFearType)
+  const canStep2 = fearItems.filter(f=>f.trim()).length>0 && (selectedWhispers.length>0||otherFear.trim()||selectedFearType.length>0)
 
   return (
     <div style={{background:'#111111',minHeight:'100vh',fontFamily:"'Lato', sans-serif",color:'#ffffff'}}>
@@ -273,7 +273,7 @@ export default function App() {
                   <p style={{...small,marginBottom:'14px'}}>Select the one that feels most like what you just wrote. Tap to expand, then confirm.</p>
                   {FEAR_TYPES.map(ft=>{
                     const isExpanded = expandedFearType===ft.id
-                    const isSelected = selectedFearType===ft.id
+                    const isSelected = selectedFearType.includes(ft.id)
                     return (
                     <div key={ft.id} style={{...card,borderColor:isSelected?'#e9c31f':'#2a2a2a',marginBottom:'10px'}}>
                       <div onClick={()=>setExpandedFearType(isExpanded?null:ft.id)} style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer'}}>
@@ -294,7 +294,7 @@ export default function App() {
                           <p style={{...small,marginBottom:'12px'}}>{ft.looks}</p>
                           <div style={{...lbl,color:'#e9c31f'}}>HOW TO REGULATE IT</div>
                           <div style={{...goldCard,marginTop:'4px'}}><p style={{...small,margin:0}}>{ft.regulate}</p></div>
-                          <button style={{...btn,marginTop:'14px'}} onClick={()=>{setSelectedFearType(ft.id);setStep(3)}}>THIS IS MY FEAR TYPE ✓</button>
+                          <button style={isSelected?{...ghost,marginTop:'14px'}:{...btn,marginTop:'14px'}} onClick={()=>setSelectedFearType(prev=>prev.includes(ft.id)?prev.filter(x=>x!==ft.id):[...prev,ft.id])}>{isSelected?'SELECTED ✓ — TAP TO UNSELECT':'SELECT THIS FEAR TYPE'}</button>
                         </div>
                       )}
                     </div>
@@ -431,7 +431,7 @@ export default function App() {
               <p style={{...body,margin:0,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>WHAT HAPPENS IN YOUR BRAIN WHEN YOU COMMIT TO A TIME:</p>
               <p style={{...body,margin:'8px 0 0'}}>The prefrontal cortex creates an implementation intention — a neural pre-commitment that fires automatically when the scheduled time arrives. The commitment is already in the architecture.</p>
             </div>
-            <button style={btn} onClick={()=>setStep(6)}>AUTOMATE YOUR COMMITMENT →</button>
+            <button style={btn} onClick={()=>setStep(6)}>SEE YOUR PERSONALIZED RESULTS →</button>
           </div>
         )}
 
