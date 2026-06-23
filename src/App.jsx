@@ -84,7 +84,7 @@ export default function App() {
   const [expandedFearType, setExpandedFearType] = useState(null)
   const [oldStory, setOldStory] = useState('')
   const [newChoice, setNewChoice] = useState('')
-  const [priorities, setPriorities] = useState([{what:'',success:'',onlyWay:'',steps:''}])
+  const [priorities, setPriorities] = useState([{what:'',success:'',onlyWay:'',steps:['','','']}])
   const [schedule, setSchedule] = useState([{day:'Monday',time:'8:00 AM'}])
   const [movieLoading, setMovieLoading] = useState(false)
   const [prioLoading, setPrioLoading] = useState(false)
@@ -350,7 +350,7 @@ export default function App() {
               <div style={lbl}>QUESTION 4 OF 6 · THE BIG SWING</div>
               <h2 style={h2s}>Your intuition already knows. It's been telling you the same thing. Now we're going to make a plan.</h2>
               <p style={body}>There's something your gut won't stop pointing at — the project, the move, the conversation, the launch. This is where you stop talking about it and start anchoring it.</p>
-              <p style={{...body,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Your intuition isn't a guess. It's your built-in GPS — and it keeps recalculating until you turn toward the destination. The thing it keeps pointing at? That's the route.</p>
+              <p style={{...body,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600}}>Your intuition is your built-in GPS system. The thing it keeps pointing at? That's the route.</p>
             </div>
             {priorities.map((pri,i)=>(
               <div key={i} style={{...card,borderColor:i===0?'rgba(233,195,31,0.3)':'#2a2a2a',marginBottom:'16px'}}>
@@ -368,8 +368,14 @@ export default function App() {
                 <p style={{...small,marginBottom:'12px'}}>Name the people you'd call. The rooms you'd walk into. The things you'd say yes to. The version of you that would have to show up. No softening. No "maybe." Only the way.</p>
                 <textarea style={{...ta,minHeight:'70px',marginBottom:'16px'}} placeholder="The only way I could do this in the next 7 days would be…" value={pri.onlyWay} onChange={e=>updatePri(i,'onlyWay',e.target.value)}/>
                 <span style={lbl}>THE RECIPE CARD — STEPS</span>
-                <p style={{...small,marginBottom:'8px'}}>Now break it down. List as many steps as you can off the top of your head — the ingredients, the order, the moves. Don't optimize. Just dump.</p>
-                <textarea style={{...ta,minHeight:'100px',marginBottom:'16px'}} placeholder={'1.\n2.\n3.\n4.\n5.'} value={pri.steps||''} onChange={e=>updatePri(i,'steps',e.target.value)}/>
+                <p style={{...small,marginBottom:'12px'}}>Now break it down. List as many steps as you can off the top of your head — the ingredients, the order, the moves. Don't optimize. Just dump.</p>
+                {(Array.isArray(pri.steps)?pri.steps:['','','']).map((stepText,s)=>(
+                  <div key={s} style={{display:'flex',gap:'10px',alignItems:'center',marginBottom:'8px'}}>
+                    <div style={{minWidth:'32px',height:'32px',borderRadius:'50%',background:'rgba(233,195,31,0.12)',border:'1px solid rgba(233,195,31,0.3)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Oswald',sans-serif",fontSize:'13px',color:'#e9c31f',fontWeight:700,flexShrink:0}}>{s+1}</div>
+                    <input style={{...inp,flex:1}} placeholder={`Step ${s+1}`} value={stepText} onChange={e=>{const a=[...priorities];const ns=[...(Array.isArray(a[i].steps)?a[i].steps:['','',''])];ns[s]=e.target.value;a[i]={...a[i],steps:ns};setPriorities(a)}}/>
+                  </div>
+                ))}
+                <button onClick={()=>{const a=[...priorities];const cur=Array.isArray(a[i].steps)?a[i].steps:['','',''];a[i]={...a[i],steps:[...cur,'']};setPriorities(a)}} style={{...ghost,marginTop:'4px',marginBottom:'16px',fontSize:'13px',padding:'10px 20px',width:'auto'}}>+ ADD STEP</button>
                 <span style={lbl}>THE WAY I'LL KNOW I SUCCEEDED IS...</span>
                 <p style={{...small,marginBottom:'8px'}}>A win needs a finish line or you'll never cross it. Name the specific, observable thing that will tell you — not feel like, tell you — that you did it. A number. A date. A thing that exists or doesn't.</p>
                 <textarea style={{...ta,minHeight:'70px'}} placeholder="Be exact. Not 'I'll feel more confident' — name a deliverable." value={pri.success} onChange={e=>updatePri(i,'success',e.target.value)}/>
@@ -377,7 +383,7 @@ export default function App() {
               </div>
             ))}
             {priorities.length<3&&(
-              <button style={{...ghost,marginBottom:'24px'}} onClick={()=>{const a=[...priorities,{what:'',success:'',onlyWay:'',steps:''}];setPriorities(a);syncSch(a)}}>+ ADD PRIORITY {priorities.length+1}</button>
+              <button style={{...ghost,marginBottom:'24px'}} onClick={()=>{const a=[...priorities,{what:'',success:'',onlyWay:'',steps:['','','']}];setPriorities(a);syncSch(a)}}>+ ADD PRIORITY {priorities.length+1}</button>
             )}
             {!priorityResponse&&(
               <button style={{...btn,opacity:priorities.some(p=>p.what.trim())?1:.5,marginBottom:'16px'}} onClick={handlePrioSubmit} disabled={!priorities.some(p=>p.what.trim())||prioLoading}>{prioLoading?'READING YOUR PRIORITIES...':'SEE YOUR FEAR DETOX SUMMARY →'}</button>
@@ -465,7 +471,7 @@ export default function App() {
               <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'4px',color:'#e9c31f',marginBottom:'12px'}}>YOUR NEXT MOVE</div>
               <h3 style={{fontFamily:"'Oswald',sans-serif",fontSize:'26px',fontWeight:700,color:'#ffffff',marginBottom:'12px',lineHeight:1.15}}>Now let AI build it with you.</h3>
               <p style={{...body,marginBottom:'16px'}}>You've named your North Star and your fear. The next step is to stop doing this manually. AI Fluency takes everything you just wrote and turns it into a fully AI-enabled brand engine and project dashboard.</p>
-              <p style={{...body,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600,marginBottom:'24px'}}>The founder who understands AI doesn't just save time — they build an entirely different kind of business.</p>
+              <p style={{...body,color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600,marginBottom:'24px'}}>The founder who understands AI is positioned to move at the speed of money.</p>
               <button style={btn} onClick={()=>window.open('https://stan.store/dollavant','_blank')}>GET AI FLUENCY — UPGRADE NOW →</button>
               <p style={{...small,textAlign:'center',marginTop:'12px',fontSize:'12px'}}>Part of The DollHouse 2.0 · dollavant.com</p>
             </div>
@@ -481,7 +487,9 @@ export default function App() {
             <div style={{textAlign:'center',marginBottom:'28px'}}>
               <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'4px',color:'#e9c31f',marginBottom:'12px'}}>WELCOME TO THE MOVEMENT</div>
               <h2 style={{...h2s,fontSize:'28px',marginBottom:'16px'}}>You're joining the #NoFearArmy.</h2>
-              <p style={{...body,margin:0,color:'#999'}}>A community of visionaries, creatives, and entrepreneurs who are done with letting fear stop you from taking BOLD ACTION. Enter your email for a free report that will immediately help you name a big fear, choose a path to conquer it, and schedule BIG BOLD action on your calendar immediately. No more hesitation. No more fear. Join the movement. You'll also get a daily fear detox prompt — one question every morning to rewire your brain and bypass your biggest fears. 365 days. Together.</p>
+              <p style={{...body,margin:'0 0 12px',color:'#999'}}>A community of visionaries, creatives, and entrepreneurs who are done with letting fear stop you from taking BOLD ACTION. Enter your email for a free report that will immediately help you name a big fear, choose a path to conquer it, and schedule BIG BOLD action on your calendar immediately.</p>
+              <p style={{...body,margin:'0 0 12px',color:'#999'}}>No more hesitation. No more fear. Join the movement.</p>
+              <p style={{...body,margin:0,color:'#999'}}>You'll also get a daily fear detox prompt — one question every morning to rewire your brain and bypass your biggest fears. 365 days. Together.</p>
             </div>
             <div style={{marginBottom:'14px'}}>
               <span style={lbl}>YOUR FIRST NAME</span>
