@@ -49,11 +49,11 @@ const REGULATION_MAP = {
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
 const TIMES = ['6:00 AM','7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM','7:00 PM','8:00 PM','9:00 PM']
 
-async function captureEmail(firstName, email) {
+async function captureEmail(firstName, email, extra = {}) {
   try {
     await fetch('/.netlify/functions/capture-email', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({firstName, email})
+      body: JSON.stringify({firstName, email, ...extra})
     })
   } catch(e) { console.log('capture failed', e) }
 }
@@ -96,6 +96,8 @@ export default function App() {
   const [fearLog, setFearLog] = useState([])
   const [copied, setCopied] = useState(false)
   const [joinLoading, setJoinLoading] = useState(false)
+  const [podcastLoading, setPodcastLoading] = useState(false)
+  const [podcastJoined, setPodcastJoined] = useState(false)
 
   useEffect(() => { window.scrollTo({top:0,behavior:'instant'}) }, [step])
 
@@ -462,11 +464,34 @@ export default function App() {
               ))}
             </div>
             <div style={{textAlign:'center',marginBottom:'32px'}}>
-              <button style={{...ghost,width:'auto',padding:'12px 28px',fontSize:'13px'}} onClick={()=>{
+              <button style={{...ghost,width:'auto',padding:'14px 28px',fontSize:'14px',minHeight:'48px'}} onClick={()=>{
                 const url=window.location.href
                 if(navigator.share)navigator.share({title:'Year of No Fear',text:'I just took the Fear Detox. Join the #NoFearArmy. F Impossible.',url})
                 else{navigator.clipboard?.writeText(url).catch(()=>{});setCopied(true);setTimeout(()=>setCopied(false),3000)}
               }}>{copied?'LINK COPIED ✓':'SHARE THIS WITH SOMEONE WHO NEEDS IT →'}</button>
+            </div>
+            <div style={{...card,borderColor:'rgba(233,195,31,0.3)',marginBottom:'24px'}}>
+              <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'4px',color:'#e9c31f',marginBottom:'12px'}}>KEEP THIS GOING</div>
+              <h3 style={{fontFamily:"'Oswald',sans-serif",fontSize:'26px',fontWeight:700,color:'#ffffff',marginBottom:'12px',lineHeight:1.15}}>Keep me in your ear.</h3>
+              <p style={{...body,marginBottom:'16px'}}><strong style={{color:'#ffffff'}}>A Year of No Fear</strong> is my private podcast. Short daily audio — anthems, storytime, and the neuroscience of fear — read by me, straight to you. Free for everyone who completes the Detox.</p>
+              {!podcastJoined ? (
+                <button
+                  style={{...btn,opacity:email.includes('@')&&!podcastLoading?1:.5,minHeight:'48px'}}
+                  disabled={!email.includes('@')||podcastLoading}
+                  onClick={async()=>{
+                    if(!email.includes('@'))return
+                    setPodcastLoading(true)
+                    await captureEmail(firstName,email,{podcast:'yes',source:'fear-detox-completion'})
+                    setPodcastLoading(false)
+                    setPodcastJoined(true)
+                  }}
+                >{podcastLoading?'ADDING YOU...':'GET THE PRIVATE FEED →'}</button>
+              ) : (
+                <div style={{...goldCard,margin:0}}>
+                  <p style={{color:'#e9c31f',fontFamily:"'Oswald',sans-serif",fontWeight:600,fontSize:'13px',letterSpacing:'2px',marginBottom:'8px'}}>YOU'RE ON THE LIST ✓</p>
+                  <p style={{...body,margin:0}}>Your private feed invitation lands in your inbox soon.</p>
+                </div>
+              )}
             </div>
             <div style={{...card,borderColor:'rgba(233,195,31,0.3)'}}>
               <div style={{fontFamily:"'Oswald',sans-serif",fontSize:'11px',letterSpacing:'4px',color:'#e9c31f',marginBottom:'12px'}}>YOUR NEXT MOVE</div>
