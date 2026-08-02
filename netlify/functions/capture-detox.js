@@ -1,6 +1,6 @@
 // Entrepreneur's Detox capture — same Google Sheet plumbing as the Fear Detox,
 // tagged `detox` for the Beehiiv sequence (Zapier picks up the tag).
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzjnXehgOOEP2q9O7f_JT_J3TvcvLVGOvVVzDxjpfyIr4UXn6oFCfuKhGUVZdPcZ76nKg/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzrvCS6Rbncw7dxGIUdYkQMjbCVBLlpfGy7_P6rKHP2ZrMAjUkExENsztfiiz-XNW8p_A/exec';
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
