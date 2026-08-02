@@ -3,11 +3,58 @@
 //
 // GATING: this endpoint serves TWO buttons in src/App.jsx —
 //   line 484  "GET THE PRIVATE FEED"   → sends podcast:'yes'
-//   line 528  "I'M IN — LET'S GO"      → sends no podcast flag
+//   line 528  "I'M IN — LET'S GO"      → sends source:'join-the-movement'
 // Only the first should ever reach Transistor. Subscribing the join-the-movement
 // crowd to a private show they never asked for would be unsolicited.
 
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzrvCS6Rbncw7dxGIUdYkQMjbCVBLlpfGy7_P6rKHP2ZrMAjUkExENsztfiiz-XNW8p_A/exec';
 const TRANSISTOR_SUBSCRIBERS_URL = 'https://api.transistor.fm/v1/subscribers';
+
+// Backstop only. A normal Apps Script POST answers in ~1.5-2s; this exists so a
+// hung Google call can never run the function into its own timeout.
+const SHEET_TIMEOUT_MS = 8000;
+
+// Writes the row to the Google Sheet. Never throws.
+//
+// redirect:'manual' is the whole point. Apps Script has ALREADY executed doPost
+// and written the row by the time it answers with a 302 — the redirect target
+// only carries a response body we never read. Following it costs a second
+// DNS+TLS round trip to script.googleusercontent.com, and that leg is what made
+// invocations run 25-31s and return 504s to visitors whose rows had written
+// fine. Measured: POST-without-follow 1.5-1.8s, whole function 25-31s.
+async function writeToSheet(payload) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), SHEET_TIMEOUT_MS);
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      redirect: 'manual',
+      signal: controller.signal
+    });
+
+    // Drain the tiny body so the socket is released instead of left dangling.
+    try { await res.text(); } catch (e) { /* nothing useful to do */ }
+
+    // 302 is the healthy answer here. 200 would also be fine.
+    if (res.status !== 302 && !res.ok) {
+      console.error(`sheet: unexpected status ${res.status} ${res.statusText}`);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    // The request was already on the wire; Apps Script runs independently of
+    // whether we wait for its answer. Observed repeatedly: rows land even when
+    // the caller gives up. So this is logged loudly but not surfaced.
+    console.error(
+      `sheet: gave up waiting (${err && err.name}) — the row has probably still been written: ${err && err.message ? err.message : err}`
+    );
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 // Never throws. Every exit path is logged. Callers must not depend on a return
 // value — the user's response is decided by the sheet write, not by this.
@@ -71,22 +118,19 @@ async function subscribeToTransistor(email) {
 
 exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+  const started = Date.now();
   try {
     const data = JSON.parse(event.body);
     const { firstName, email, ...extra } = data;
     const payload = { firstName, email, ...extra };
 
-    // 1. Sheet write FIRST. Unchanged — same URL, same shape, same semantics.
-    await fetch('https://script.google.com/macros/s/AKfycbzrvCS6Rbncw7dxGIUdYkQMjbCVBLlpfGy7_P6rKHP2ZrMAjUkExENsztfiiz-XNW8p_A/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    // 1. Sheet write FIRST. Same URL, same payload as always.
+    await writeToSheet(payload);
 
-    // 2. Transistor, only for private-feed opt-ins, and only after the sheet is done.
-    //    Belt-and-braces try/catch: subscribeToTransistor already swallows everything,
-    //    but an unexpected throw here would fall into the outer catch and turn a
-    //    successful sheet write into a 500 for the user. It must not.
+    // 2. Transistor, only for private-feed opt-ins, and only after the sheet.
+    //    Belt-and-braces try/catch: subscribeToTransistor already swallows every
+    //    failure internally, but an unexpected throw here would fall into the
+    //    outer catch and turn a successful sheet write into a 500. It must not.
     if (email && String(extra.podcast).toLowerCase() === 'yes') {
       try {
         await subscribeToTransistor(email);
@@ -97,6 +141,7 @@ exports.handler = async function(event) {
       }
     }
 
+    console.log(`capture-email: done in ${Date.now() - started}ms`);
     return { statusCode: 200, body: JSON.stringify({ success: true }) };
   } catch(err) { return { statusCode: 500, body: JSON.stringify({ error: err.message }) }; }
 };
